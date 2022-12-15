@@ -73,10 +73,10 @@
                         }   
                 
                          echo "<td>$comment_date</td>";*/
-                        echo "<td><a href='users.php?update_admin=$user_id'>Admin</a></td>";
-                         echo "<td><a href='users.php?update_sub=$user_id'>Subscriber</a</td>";
-                    echo "<td><a href='users.php?source=edit_user&edit_user={$user_id}'>Edit</a></td>";
-                         echo "<td><a onClick= \" javascript: return confirm('Are you sure you want to delete Message') ;\"  href='users.php?delete=$user_id'>Delete</a></td>";
+                        echo "<td><a  class='btn btn-info' href='users.php?update_admin=$user_id'>Admin</a></td>";
+                         echo "<td><a  class='btn btn-info' href='users.php?update_sub=$user_id'>Subscriber</a</td>";
+                    echo "<td><a class='btn btn-info' href='users.php?source=edit_user&edit_user={$user_id}'>Edit</a></td>";
+                         echo "<td><a class='btn btn-danger' onClick= \" javascript: return confirm('Are you sure you want to delete Message') ;\"  href='users.php?delete=$user_id'>Delete</a></td>";
              
                          echo "</tr>";
                                }

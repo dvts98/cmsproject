@@ -108,7 +108,14 @@ if(isset($_POST['checkBoxArray']))
                       <tbody>
                          <?php
                           
-                          $query="select * from posts  order by post_id desc";
+                        //  $query="select * from posts  order by post_id desc";
+                          
+$query="select    posts.post_id,posts.post_author,posts.post_title,posts.post_user,posts.post_category_id,posts.post_status,posts.post_image,posts.post_tags,posts.post_comment_count,posts.post_date,posts.post_views_count, " ;
+$query .="category.cat_id,category.cat_title ";
+$query .="from posts ";
+$query .=" LEFT JOIN  category ON posts.post_category_id =category.cat_id order by posts.post_id DESC";
+                          //echo $query;
+                          //exit;
                  $select_posts=mysqli_query($connection,$query);
                     
                 while($row=mysqli_fetch_assoc($select_posts))
@@ -123,6 +130,10 @@ if(isset($_POST['checkBoxArray']))
                                 $post_status=$row['post_status'];
                                 $post_category_id=$row['post_category_id'];
                                 $post_views_count=$row['post_views_count'];
+                                $cat_id=$row['cat_id'];
+                                $cat_title=$row['cat_title'];
+                    
+                    
                                 $post_user=$row['post_user'];
                                 $query="select * from users  where user_id='$post_user'";
                                 $select_username=mysqli_query($connection,$query);
@@ -145,15 +156,15 @@ if(isset($_POST['checkBoxArray']))
                     }
                          echo "<td>$post_title</td>";
                     
-                     $query="select * from category where cat_id='$post_category_id'";
-                     $select_category=mysqli_query($connection,$query);
-                     confirm_query($select_category) ; 
-                     while($row=mysqli_fetch_assoc($select_category))
-                     {
-                                $cat_id=$row['cat_id'];
-                                $cat_title=$row['cat_title'];
+                    // $query="select * from category where cat_id='$post_category_id'";
+                    // $select_category=mysqli_query($connection,$query);
+                     //confirm_query($select_category) ; 
+                     //while($row=mysqli_fetch_assoc($select_category))
+                    // {
+                               // $cat_id=$row['cat_id'];
+                               // $cat_title=$row['cat_title'];
                     
-                     }
+                    // }
                     
                     
                          echo "<td>{$cat_title}</td>";
@@ -170,9 +181,9 @@ if(isset($_POST['checkBoxArray']))
                          echo "<td><a href='post_comments.php?id={$post_id}'>$comment_count</a></td>";
                          echo "<td>$post_date</td>";
                          echo "<td><a href='posts.php?reset={$post_id}'>{$post_views_count}</a></td>";
-                         echo "<td><a href='../post.php?p_id={$post_id}'>View Post</a></td>";
-                         echo "<td><a href='posts.php?source=edit_post&p_id={$post_id}'>Edit</a></td>";
-                         echo "<td><a rel='$post_id' href='javascript:void(0)' class='delete_link'>Delete</a></td>";
+                         echo "<td><a  class='btn btn-info' href='../post.php?p_id={$post_id}'>View Post</a></td>";
+                         echo "<td><a class='btn btn-info' href='posts.php?source=edit_post&p_id={$post_id}'>Edit</a></td>";
+                         echo "<td><a rel='$post_id' href='javascript:void(0)' class='delete_link btn btn-danger'>Delete</a></td>";
                         // echo "<td><a onClick= \" javascript: return confirm('Are you sure you want to delete Message') ;\" href='posts.php?delete={$post_id}'>Delete</a></td>";
                     //header("location:posts.php");
                          echo "</tr>";
@@ -184,58 +195,62 @@ if(isset($_POST['checkBoxArray']))
                   </table>
                   </form>
                   
-                 <?php
+                <?php
 
-if(isset($_GET['delete']))
-{
-    
-    
-    if(isset($_SESSION['user_role']))
-    {
-        if($_SESSION['user_role'] == 'admin')
-        {
-    $the_post_id=mysqli_real_escape_string($connection,$_GET['delete']);
-    
-    $query="delete from posts where post_id={$the_post_id}";
-    $delete_query=mysqli_query($connection,$query);
-    header("location:posts.php");
-    
-        }
-    }
-}
+                if(isset($_GET['delete']))
+                {
 
 
-if(isset($_GET['reset']))
-{
-    $the_post_id=$_GET['reset'];
-    
-    $query="update posts set post_views_count=0 where post_id=".mysqli_real_escape_string($connection,$_GET['reset'])." ";
-    $delete_query=mysqli_query($connection,$query);
-    header("location:posts.php");
-    
-    
-}
-      
-                    ?>
-                    <script>
+                if(isset($_SESSION['user_role']))
+                {
+                if($_SESSION['user_role'] == 'admin')
+                {
+                $the_post_id=mysqli_real_escape_string($connection,$_GET['delete']);
 
-            $(document).ready(function(){
-            $(".delete_link").on('click',function(){
+                $query="delete from posts where post_id={$the_post_id}";
+                $delete_query=mysqli_query($connection,$query);
+                header("location:posts.php");
 
-            var id=$(this).attr("rel");
-var delete_url="posts.php?delete="+ id +" ";
-$(".modal_delete_link").attr("href",delete_url);
-$("#myModal").modal('show');
-
-            });
+                }else
+               {
+            
+            echo "<h5>You Have No Rights to Delete a Comment</h5>";
+               }
+                }
+                }
 
 
+                if(isset($_GET['reset']))
+                {
+                $the_post_id=$_GET['reset'];
+
+                $query="update posts set post_views_count=0 where post_id=".mysqli_real_escape_string($connection,$_GET['reset'])." ";
+                $delete_query=mysqli_query($connection,$query);
+                header("location:posts.php");
 
 
+                }
 
-            });
+                ?>
+                <script>
+
+                $(document).ready(function(){
+                $(".delete_link").on('click',function(){
+
+                var id=$(this).attr("rel");
+                var delete_url="posts.php?delete="+ id +" ";
+                $(".modal_delete_link").attr("href",delete_url);
+                $("#myModal").modal('show');
+
+                });
 
 
 
 
-                     </script>
+
+                });
+
+
+
+
+                 </script>

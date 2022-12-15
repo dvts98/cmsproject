@@ -75,11 +75,17 @@
 
 
                     echo "<td>$comment_date</td>";
-                    echo "<td><a href='comments.php?approve=$comment_id'>Approve</a></td>";
-                    echo "<td><a href='comments.php?unapprove=$comment_id'>UnApprove</a></td>";
-
-                    echo "<td><a onClick= \" javascript: return confirm('Are you sure you want to delete Message') ;\" href='comments.php?delete=$comment_id & comment_post_id=$comment_post_id'>Delete</a></td>";
-                    //header("location:posts.php");
+                    echo "<td><a  class='btn btn-info' href='comments.php?approve=$comment_id'>Approve</a></td>";
+                    echo "<td><a  class='btn btn-info' href='comments.php?unapprove=$comment_id'>UnApprove</a></td>";
+                        ?>
+                        
+<form method="post" action="">
+    
+    <input type="hidden" name="comment_id" value="<?php echo $comment_id ?>">
+   <?php echo '<td><input type="submit"  class="btn btn-danger" name="delete" value="Delete"> </td>' ?>
+</form>
+                 <?php
+                  
                     echo "</tr>";
                     }
 
@@ -114,23 +120,23 @@
                     }
 
 
-                    if(isset($_GET['delete']))
+                    if(isset($_POST['delete']))
                     {
                         if(isset($_SESSION['user_role']))
     {
         if($_SESSION['user_role'] == 'admin')
         {
-                    $the_comment_id=mysqli_real_escape_string($connection,$_GET['delete']);
-                      $comment_post_id=$_GET['comment_post_id'];
+                    $the_comment_id=$_POST['comment_id'];
+                    
 
                     $query="delete from comments where comment_id={$the_comment_id}";
                     $delete_query=mysqli_query($connection,$query);
-                   // $query ="update posts set post_comment_count=post_comment_count-1 ";
-                               // $query .="where post_id={$comment_post_id}";
-                                    //echo $query;
-                                    //exit;
-                                   // $update_query=mysqli_query($connection,$query);
+                   
                     header("Location:comments.php");
+        } else
+        {
+            
+            echo "<h5>You Have No Rights to Delete a Comment</h5>";
         }
                         }
 

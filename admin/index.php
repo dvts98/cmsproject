@@ -14,13 +14,22 @@
                 <!-- Page Heading -->
                 <div class="row">
                     <div class="col-lg-12">
-                        <h1 class="page-header">
+                        <?php
+                           if($_SESSION['user_role']=='admin')
+                           {
+                               ?>
+                           <h1 class="page-header">
                             Welcome to Admin
                          
                 <small><?php echo $_SESSION['username'];?></small>
                         </h1>
-                
-                       
+                <?php }  else {?>
+                      <h1 class="page-header">
+                            Welcome
+                         
+                <small><?php echo $_SESSION['username'];?></small>
+                        </h1>
+                      <?php } ?>  
                     </div>
                 </div>
                 <!-- /.row -->

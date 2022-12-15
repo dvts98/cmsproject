@@ -104,8 +104,8 @@ function confirm_query($result)
                     echo "<tr>";                     
                     echo "<td>{$cat_id}</td>";           
                     echo "<td>{$cat_title}</td>";
-                    echo "<td><a  onClick= \" javascript: return confirm('Are you sure you want to delete Message') ;\" href='category.php?delete={$cat_id}'>Delete</a></td>";
-                    echo "<td><a href='category.php?update={$cat_id}'>Update</a></td>";
+                    echo "<td><a class='btn btn-danger' onClick= \" javascript: return confirm('Are you sure you want to delete Message') ;\" href='category.php?delete={$cat_id}'>Delete</a></td>";
+                    echo "<td><a class='btn btn-info' href='category.php?update={$cat_id}'>Update</a></td>";
                     echo "</tr>"; 
                     }
 
@@ -117,12 +117,20 @@ function confirm_query($result)
 
                     if(isset($_GET['delete']))
                     {
+                       // session_start();
+                        if($_SESSION['user_role'] == 'admin')
+                { 
                     $get_cat_id=$_GET['delete'];
                     $query="delete from category where cat_id={$get_cat_id}";
                     $delete_category=mysqli_query($connection,$query);
                     header("Location:category.php");
 
+                        }
+                else
+                {
 
+                echo "<h5>You Have No Rights to Delete a Comment</h5>";
+                }   
                     }
 
                     }
@@ -152,6 +160,133 @@ function checkStatus($table,$column,$status){
     
        
 }
+//check user role///
+function is_admin($username = ''){
+    
+                    global $connection;
+                    $query="select user_role from users where username='$username'";
+                    $result=mysqli_query($connection,$query);
+                    confirm_query($result);
+                    $row=mysqli_fetch_array($result);
+                    if($row['user_role']=='admin')
+                    {
+                     return true;   
+                    } else{
+
+                      return false;  
+                    }
 
 
+    
+    
+}
+//username checks//
+function username_exists($username){
+    
+                    global $connection;
+                    $query="select username from users where username='$username'";
+                    $result=mysqli_query($connection,$query);
+                    confirm_query($result);
+                    if(mysqli_num_rows($result)>0){
+
+                      return true;   
+                    } else{
+
+                      return false;    
+
+
+                    }
+
+
+    
+    
+}
+//email exits check
+function useremail_exists($email){
+    
+                    global $connection;
+                    $query="select user_email from users where user_email='$email'";
+                    $result=mysqli_query($connection,$query);
+                    confirm_query($result);
+                    if(mysqli_num_rows($result)>0){
+
+                      return true;   
+                    } else{
+
+                      return false;    
+
+
+                    }
+    
+    
+    
+    
+}
+//registration users///
+function register_user($username,$email,$password){
+    
+                    global $connection;
+                    $username = mysqli_real_escape_string($connection, $username);
+                    $email    = mysqli_real_escape_string($connection, $email);
+                    $password = mysqli_real_escape_string($connection, $password);
+
+
+                    $password=password_hash( $password, PASSWORD_BCRYPT,array('cost'=>12));
+
+                    if(!empty($username) && !empty($email) && !empty($password))  
+                    {
+                    $query="insert into users(`username`, `user_password`,`user_email`,user_role)";
+
+                    $query.="values('{$username}','{$password}','{$email}','subscriber')";
+
+                    $create_query=mysqli_query($connection,$query);
+                    confirm_query($create_query);   
+                    }
+        
+    
+}
+ 
+//login user    
+ function login_user($username,$password){
+                    global $connection;
+                    $username= trim($username);
+                    $email= trim($email);
+                    $username = mysqli_real_escape_string($connection, $username);
+                    $password = mysqli_real_escape_string($connection, $password);
+
+                    $query = "SELECT * FROM users WHERE username = '{$username}' ";
+                    $select_user_query = mysqli_query($connection, $query);
+                    if (!$select_user_query) {
+
+                    die("QUERY FAILED" . mysqli_error($connection));
+                    }
+
+                    while ($row = mysqli_fetch_array($select_user_query)) {
+                    $db_id = $row['user_id'];
+                    $db_username = $row['username'];
+                    $db_user_password = $row['user_password'];
+                    $db_user_firstname = $row['user_firstname'];
+                    $db_user_lastname = $row['user_lastname'];
+                    $db_user_role = $row['user_role'];
+                    }
+                   if (password_verify($password,$db_user_password)) {
+                    if (session_status() == PHP_SESSION_NONE) session_start(); // --> I added this line, it will check if session is started and if it is not it will start it. <--
+                    $_SESSION['username'] = $db_username;
+                    $_SESSION['firstname'] = $db_user_firstname;
+                    $_SESSION['lastname'] = $db_user_lastname;
+                    $_SESSION['user_role'] = $db_user_role;
+
+                    redirect("/cms/admin");
+                    } else {
+
+                    redirect("/cms/index.php");
+                    }
+     
+     
+     
+     
+ }   
+    
+
+    
                     ?>
